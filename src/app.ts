@@ -2,10 +2,17 @@ import prisma from './lib/prisma/client';
 import express from "express";
 import "express-async-errors";
 import { validate, planetSchema, validationErrorMiddleware, PlanetData } from "./lib/validation";
+import cors from "cors";
+
+const corsOptions = {
+    origin: "http://localhost:8080"
+}
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors(corsOptions));
 
 //GET ALL RESOURCES
 
