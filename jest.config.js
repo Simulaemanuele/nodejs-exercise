@@ -8,4 +8,3 @@ module.exports = {
         "./src/lib/middleware/multer.mock.ts",
     ],
 };
-

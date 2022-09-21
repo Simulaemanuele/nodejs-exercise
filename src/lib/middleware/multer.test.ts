@@ -10,7 +10,7 @@ describe("generatePhotoFilename", () => {
             const fullFilename = generatePhotoFilename(mimeType);
             const [, fileExtension] = fullFilename.split(".");
 
-            expect(fileExtension).toEqual(expectedFileExtension)
+            expect(fileExtension).toEqual(expectedFileExtension);
         }
     );
 });
