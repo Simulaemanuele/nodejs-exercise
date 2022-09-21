@@ -1,6 +1,6 @@
-import addFormats from 'ajv-formats';
-import { ErrorRequestHandler } from 'express';
-import { Validator, ValidationError } from 'express-json-validator-middleware';
+import addFormats from "ajv-formats";
+import { ErrorRequestHandler } from "express";
+import { Validator, ValidationError } from "express-json-validator-middleware";
 
 const validator = new Validator({});
 
@@ -10,16 +10,21 @@ addFormats(validator.ajv, ["date-time"])
 
 export const validate = validator.validate;
 
-export const validationErrorMiddleware: ErrorRequestHandler = (error, request, response, next) => {
+export const validationErrorMiddleware: ErrorRequestHandler = (
+    error,
+    request,
+    response,
+    next
+) => {
     if (error instanceof ValidationError) {
         response.status(422).send({
-            errors: error.validationErrors
+            errors: error.validationErrors,
         });
 
         next();
     } else {
-        next(error)
+        next(error);
     }
-}
+};
 
-export * from './planet';
+export * from "./planet";
