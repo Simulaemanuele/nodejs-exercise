@@ -5,6 +5,7 @@ import {
     planetSchema,
     PlanetData,
 } from "../lib/middleware/validation";
+import { checkAuthorization } from "../lib/middleware/passport";
 import { initMulterMiddleware } from "../lib/middleware/multer";
 
 const upload = initMulterMiddleware();
@@ -39,12 +40,18 @@ router.get("/:id(\\d+)", async (request, response, next) => {
 
 router.post(
     "/",
+    checkAuthorization,
     validate({ body: planetSchema }),
     async (request, response) => {
         const planetData: PlanetData = request.body;
+        const username = request.user?.username as string;
 
         const planet = await prisma.planet.create({
-            data: planetData,
+            data: {
+                ...planetData,
+                createdBy: username,
+                updatedBy: username
+            }
         });
 
         response.status(201).json(planet);
@@ -55,15 +62,20 @@ router.post(
 
 router.put(
     "/:id(\\d+)",
+    checkAuthorization,
     validate({ body: planetSchema }),
     async (request, response, next) => {
         const planetData: PlanetData = request.body;
         const planetId = Number(request.params.id);
+        const username = request.user?.username as string;
 
         try {
             const planet = await prisma.planet.update({
                 where: { id: planetId },
-                data: planetData,
+                data: {
+                    ...planetData,
+                    updatedBy: username,
+                }
             });
 
             response.status(200).json(planet);
@@ -76,7 +88,7 @@ router.put(
 
 //DELETE A RESOURCE BY ID
 
-router.delete("/:id(\\d+)", async (request, response, next) => {
+router.delete("/:id(\\d+)", checkAuthorization, async (request, response, next) => {
     const planetId = Number(request.params.id);
 
     try {
@@ -93,6 +105,7 @@ router.delete("/:id(\\d+)", async (request, response, next) => {
 
 router.post(
     "/:id(\\d+)/photo",
+    checkAuthorization,
     upload.single("photo"),
     async (request, response, next) => {
         if (!request.file) {
